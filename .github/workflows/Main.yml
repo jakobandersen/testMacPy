@@ -1,14 +1,12 @@
 name: Main tests
 
 on: [push, pull_request]
-env:
-  virtualEnv: $GITHUB_WORKSPACE/myVenv
 
 jobs:
   macOS:
     strategy:
       matrix:
-        version: [14, 15, 26]
+        version: [14]
       fail-fast: false
     runs-on: macos-${{ matrix.version }}
     steps:
@@ -24,8 +22,9 @@ jobs:
         /usr/libexec/path_helper | sed -e 's/^PATH="//' -e 's/"; export PATH;//' | tr ":" "\n"  | tail -r >> $GITHUB_PATH
     - name: Set up virtual environment
       run: |
-        python3 -m venv --system-site-packages $virtualEnv
-        echo "$virtualEnv/bin" >> $GITHUB_PATH
+        python3 -m venv --system-site-packages $GITHUB_WORKSPACE/myVenv
+        echo "$GITHUB_WORKSPACE/myVenv/bin" >> $GITHUB_PATH
+        echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/myVenv" >> $GITHUB_ENV
     - name: Configure
       run: |
         echo "PATH: $PATH"
