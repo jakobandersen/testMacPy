@@ -28,6 +28,9 @@ jobs:
         echo "$virtualEnv/bin" >> $GITHUB_PATH
     - name: Configure
       run: |
+        echo "PATH: $PATH"
+        echo "PYTHONPATH: $PYTHONPATH"
+        which python3
         mkdir build
         cd build
         cmake ../ -DBUILD_TESTING=yes
