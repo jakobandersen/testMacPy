@@ -1,0 +1,35 @@
+name: Main tests
+
+on: [push, pull_request]
+
+jobs:
+  macOS:
+    strategy:
+      matrix:
+        version: [14, 15, 26]
+      fail-fast: false
+    runs-on: macos-${{ matrix.version }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        submodules: 'recursive'
+    - name: Install Brew dependencies
+      run: |
+        brew update
+        brew bundle
+        /usr/libexec/path_helper | sed -e 's/^PATH="//' -e 's/"; export PATH;//' | tr ":" "\n"  | tail -r >> $GITHUB_PATH
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake ../ -DBUILD_TESTING=yes
+    - name: Build
+      run: cd build && make -j 4
+    - name: Install
+      run: cd build && sudo make install
+    - name: Build tests
+      run: cd build && make tests -j 4
+    - name: Run tests
+      run: cd build && ctest --output-on-failure -j 4

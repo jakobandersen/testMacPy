@@ -1,0 +1,10 @@
+print("##### Redirector 1")
+import sys
+sys.path.insert(0, "@CMAKE_INSTALL_FULL_LIBDIR@")
+del sys.modules['mod']
+print("##### Redirector 2")
+import mod
+print("##### Redirector 3")
+assert not mod._redirected
+mod._redirected = True
+print("##### Redirector 4")

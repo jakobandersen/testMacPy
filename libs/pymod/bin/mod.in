@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+
+function printHelp {
+	echo "Wrapper"
+}
+
+# Args
+doPrintHelp="false"
+quiet="false"
+summaryArgs=""
+
+# File names
+
+# Find prefix
+self="mod"
+if [ -z "$MOD_PREFIX" ]; then
+	MOD_PREFIX="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd )/.."
+	if ! stat "$MOD_PREFIX/bin/$self" &> /dev/null; then
+		echo "Could not find our own location. Please set PATH, MOD_PREFIX or use the correct path."
+		echo "PATH is $PATH"
+		echo "Guessed path is $MOD_PREFIX/bin/$self"
+		exit 1
+	fi
+else
+	if ! stat "$MOD_PREFIX/bin/$self" &> /dev/null; then
+		echo "Invalid path in MOD_PREFIX. \"$MOD_PREFIX/bin/$self\" does not exist."
+		exit 1
+	fi
+fi
+export MOD_PREFIX
+
+
+args=()
+summaryArgs=()
+
+# Parse options
+while test "$1" != ""; do
+	case $1 in
+		"--help"|"-h" )
+			doPrintHelp="true"
+			shift
+			;;
+		"--version"|"-v" )
+			doVersion="true"
+			shift
+			;;
+		"--get-latex" )
+			getLatex="true"
+			shift
+			;;
+		"-i" )
+			interactive="true"
+			shift
+			;;
+		"-q" )
+			quiet="true"
+			shift
+			;;
+		"--profile" )
+			profile="true"
+			shift
+			;;
+		"--memcheck" )
+			memcheck="true"
+			shift
+			;;
+		"--vgArgs" )
+			vgArgs="$2"
+			shift
+			shift
+			;;
+		"--debug" )
+			debug="true"
+			post="false"
+			shift
+			;;
+		"--nopost" )
+			post="false"
+			shift
+			;;
+		"-j" )
+			summaryArgs+=(-j "$2")
+			shift
+			shift
+			;;
+		"clean" )
+			clean="true"
+			post="false"
+			shift
+			;;
+		* )
+			args+=("$1")
+			shift
+			;;
+	esac
+done
+
+if test "$quiet" = "false"; then
+	echo "MØD Wrapper --------------------------------------------------------"
+	echo "Prefix: $MOD_PREFIX"
+	echo -n "MØD version "
+fi
+if test "$quiet" = "false" -o "$doVersion" = "true"; then
+	echo "@PROJECT_VERSION@"
+fi
+
+
+if test "$doPrintHelp" = "true"; then
+	printHelp "$0"
+	exit 0
+fi
+if test "$doVersion" = "true"; then
+	exit 0
+fi
+if test "$getLatex" = "true"; then
+	if test "$quiet" = "false"; then
+		echo "cp $MOD_PREFIX/share/mod/mod.{sty,mk} ./"
+	fi
+	cp "$MOD_PREFIX"/share/mod/mod.{sty,mk} ./
+	exit $?
+fi
+
+function executeVM {
+	if test "$quiet" = "false"; then
+		echo "Running Python Interpreter -----------------------------------------"
+		time "$@"
+	else
+		"$@"
+	fi
+}
+
+function executeVMPython {
+	local pyFile="input.py"
+	touch $pyFile
+	echo "import mod" >> $pyFile
+
+	while [ "$1" ]; do
+		case $1 in
+			"-f" )
+				shift
+				echo "include(\"$1\")" >> $pyFile
+				shift
+				;;
+			"-e" )
+				shift
+				echo "$1" >> $pyFile
+				shift
+				;;
+			* )
+				echo "Unknown argument '$1'"
+				exit 1
+				;;
+		esac
+	done
+	export PYTHONPATH="$PYTHONPATH:@CMAKE_INSTALL_FULL_LIBDIR@:$(pwd)"
+	echo "# PYTHONPATH=$PYTHONPATH" >> $pyFile
+	echo "Input --------------------------------------------------------------"
+	echo "(see $pyFile)"
+	echo "Command ------------------------------------------------------------"
+	if [ "x$MOD_PYTHON" = 'x' ]; then
+		pythonvm="@Python3_EXECUTABLE@"
+	else
+		pythonvm="$MOD_PYTHON"
+	fi
+	echo "$pythonvm $pyFile"
+	executeVM $pythonvm $pyFile
+	ret=${PIPESTATUS[0]}
+	return $ret
+}
+
+executeVMPython "${args[@]}"
+ret=$?
+
+if [ $ret -ne 0 ]; then
+	echo "Program failed! Exit code: $ret"
+	exit $ret
+fi
+exit $res
