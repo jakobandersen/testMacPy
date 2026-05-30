@@ -32,4 +32,4 @@ jobs:
     - name: Build tests
       run: cd build && make tests -j 4
     - name: Run tests
-      run: cd build && ctest --output-on-failure -j 4
+      run: cd build && ctest --verbose
