@@ -22,6 +22,7 @@ jobs:
         /usr/libexec/path_helper | sed -e 's/^PATH="//' -e 's/"; export PATH;//' | tr ":" "\n"  | tail -r >> $GITHUB_PATH
     - name: Print data pre
       run: |
+        brew info open-babel
         python3 -m pip list -vvv
         echo "PATH: $PATH"
         echo "VIRTUAL_ENV: $VIRTUAL_ENV"
