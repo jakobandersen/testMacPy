@@ -23,6 +23,9 @@ jobs:
     - name: Print data pre
       run: |
         brew info open-babel
+        brew ls -v open-babel
+        which python3
+        which obabel
         python3 -m pip list -vvv
         echo "PATH: $PATH"
         echo "VIRTUAL_ENV: $VIRTUAL_ENV"
@@ -34,6 +37,9 @@ jobs:
         echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/myVenv" >> $GITHUB_ENV
     - name: Print data
       run: |
+        brew info open-babel
+        which python3
+        which obabel
         python3 -m pip list -vvv
         echo "PATH: $PATH"
         echo "VIRTUAL_ENV: $VIRTUAL_ENV"
