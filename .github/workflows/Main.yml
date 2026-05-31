@@ -20,6 +20,12 @@ jobs:
         brew update
         brew bundle
         /usr/libexec/path_helper | sed -e 's/^PATH="//' -e 's/"; export PATH;//' | tr ":" "\n"  | tail -r >> $GITHUB_PATH
+    - name: Print data pre
+      run: |
+        python3 -m pip list -vvv
+        echo "PATH: $PATH"
+        echo "VIRTUAL_ENV: $VIRTUAL_ENV"
+        python3 -c "import openbabel; print(openbabel.__file__)"
     - name: Set up virtual environment
       run: |
         python3 -m venv --system-site-packages $GITHUB_WORKSPACE/myVenv
