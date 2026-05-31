@@ -25,10 +25,13 @@ jobs:
         python3 -m venv --system-site-packages $GITHUB_WORKSPACE/myVenv
         echo "$GITHUB_WORKSPACE/myVenv/bin" >> $GITHUB_PATH
         echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/myVenv" >> $GITHUB_ENV
+    - name: Print data
+      run: |
+        python3 -m pip list -vvv
+        echo "PATH: $PATH"
+        echo "VIRTUAL_ENV: $VIRTUAL_ENV"
     - name: Configure
       run: |
-        echo "PATH: $PATH"
-        echo "PYTHONPATH: $PYTHONPATH"
         which python3
         mkdir build
         cd build
