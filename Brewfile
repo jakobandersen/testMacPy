@@ -1,3 +1,3 @@
 brew "pkg-config"
 brew "cmake"
-brew "open-babel"
+brew "open-babel", args: ['verbose']
