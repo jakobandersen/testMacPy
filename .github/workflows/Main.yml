@@ -22,7 +22,6 @@ jobs:
         brew bundle --verbose
         echo "GITHUB_PATH:"
         cat $GITHUB_PATH
-        /usr/libexec/path_helper | sed -e 's/^PATH="//' -e 's/"; export PATH;//' | tr ":" "\n"  | tail -r >> $GITHUB_PATH
         echo "path_helper:"
         /usr/libexec/path_helper
         echo "GITHUB_PATH:"
