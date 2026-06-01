@@ -30,6 +30,8 @@ jobs:
         python3 -m pip list -vvv
         echo "PATH: $PATH"
         echo "VIRTUAL_ENV: $VIRTUAL_ENV"
+        which python3
+        python3 -c "import sys; print('sys.path:', '\n  '.join(sys.path));"
         python3 -c "import openbabel; print(openbabel.__file__)"
     - name: Set up virtual environment
       run: |
