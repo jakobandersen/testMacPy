@@ -39,6 +39,8 @@ set(libmod_config_dependencies "")
 set(libmod_config_find_files "")
 
 
+find_package(LATEX REQUIRED COMPONENTS PDFLATEX)
+
 # Python
 # -------------------------------------------------------------------------
 if(BUILD_PY_MOD)

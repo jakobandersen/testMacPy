@@ -17,44 +17,18 @@ jobs:
         submodules: 'recursive'
     - name: Install Brew dependencies
       run: |
-        brew --version
         brew update
         brew bundle --verbose
-        echo "GITHUB_PATH:"
-        cat $GITHUB_PATH
-        echo "path_helper:"
-        /usr/libexec/path_helper
-        echo "GITHUB_PATH:"
-        cat $GITHUB_PATH
-    - name: Print data pre
-      run: |
-        brew info open-babel
-        brew ls -v open-babel
-        brew list
-        which python3
-        which obabel
-        python3 -m pip list -vvv
-        echo "PATH: $PATH"
-        echo "VIRTUAL_ENV: $VIRTUAL_ENV"
-        which python3
-        python3 -c "import sys; print('sys.path:', '\n  '.join(sys.path));"
-        python3 -c "import openbabel; print(openbabel.__file__)"
+        cat /etc/paths.d/TeX >> $GITHUB_PATH
     - name: Set up virtual environment
       run: |
         python3 -m venv --system-site-packages $GITHUB_WORKSPACE/myVenv
         echo "$GITHUB_WORKSPACE/myVenv/bin" >> $GITHUB_PATH
         echo "VIRTUAL_ENV=$GITHUB_WORKSPACE/myVenv" >> $GITHUB_ENV
-    - name: Print data
-      run: |
-        brew info open-babel
-        which python3
-        which obabel
-        python3 -m pip list -vvv
-        echo "PATH: $PATH"
-        echo "VIRTUAL_ENV: $VIRTUAL_ENV"
     - name: Configure
       run: |
-        which python3
+        echo "PATH: $PATH"
+        echo "VIRTUAL_ENV: $VIRTUAL_ENV"
         mkdir build
         cd build
         cmake ../ -DBUILD_TESTING=yes
